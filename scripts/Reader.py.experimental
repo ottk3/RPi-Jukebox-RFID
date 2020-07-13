@@ -82,7 +82,7 @@ class Mfrc522Reader(object):
         GPIO.cleanup()
 
 
-class Rdm6300Reader:
+class Rdm6300Reader():
     def __init__(self):
         device = '/dev/ttyS0'
         baudrate = 9600
@@ -112,16 +112,17 @@ class Rdm6300Reader:
                         card_id = ''.join(x for x in card_id if x in string.printable)
 
                         # Only return UUIDs with correct length
-                        if len(card_id) == 12 and card_id != self.last_card_id:
+                        if len(card_id) == 12:
                             self.last_card_id = card_id
                             self.rfid_serial.reset_input_buffer()
                             return self.last_card_id
 
                         else:   # wrong UUID length or already send that UUID last time
                             self.rfid_serial.reset_input_buffer()
+                            return None
 
                 except ValueError as ve:
-                    logger.errror(ve)
+                    logger.error(ve)
 
         except serial.SerialException as se:
             logger.error(se)
